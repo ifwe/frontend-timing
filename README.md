@@ -3,6 +3,8 @@ Timing
 
 A simple tool for measuring front-end performance. Compatible with the HTML5 Performance Timing API, if available. Also supports arbitrary custom events.
 
+[View the demo!](http://htmlpreview.github.io/?https://github.com/tagged/frontend-timing/blob/master/demo/index.html)
+
 Usage
 --
 
