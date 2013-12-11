@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="../src/timing.js"></script>
+<script type="text/javascript">
+(function(window) {
+  "use strict";
+
+  var timing = new window.tagged.Timing(window.performance.timing);
+
+  // Register a custom event
+  timing.register('firstByte', function(timing) {
+    return timing.responseStart - timing.navigationStart;
+  });
+
+  window.addEventListener("load", function() {
+    window.setTimeout(function() {
+      var data = timing.getAll();
+      appendResult('Timing data available on page load', data);
+    }, 0);
+
+    window.setInterval(function() {
+      // Custom event start
+      timing.start('derp');
+
+      window.setTimeout(function() {
+        // Custom event end
+        timing.end('derp');
+
+        var customEventData = timing.get('derp');
+        appendResult('Custom event "derp"', customEventData);
+      }, Math.random() * 100);
+    }, 2000);
+  }, false);
+
+  var appendResult = function(label, data) {
+    var li = document.createElement('li');
+    var title = document.createElement('h3');
+    var pre = document.createElement('pre');
+
+    li.appendChild(title);
+    li.appendChild(pre);
+
+    title.innerText = label;
+    pre.innerText = JSON.stringify(data, null, 2);
+
+    document.getElementById('results').appendChild(li);
+  };
+})(window);
+</script>
+</head>
+
+<body>
+  <ul id="results"></ul>
+</body>
+</html>
