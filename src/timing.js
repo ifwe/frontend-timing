@@ -48,8 +48,6 @@
     } else {
       this.calcs = {};
     }
-
-    this.customcalcs = {};
   };
 
   // Static methods
@@ -97,18 +95,18 @@
     return data;
   };
 
-  Timing.prototype._customcalcstartGenerator = function(name) {
+  Timing.prototype._customCalculationStartGenerator = function(name) {
     return name + 'Start';
   };
 
-  Timing.prototype._customEventEndGenerator = function(name) {
+  Timing.prototype._customCalculationEndGenerator = function(name) {
     return name + 'End';
   };
 
   Timing.prototype._ensureCustomCalculation = function(name) {
     if (!this.calcs[name]) {
-      var start = this._customcalcstartGenerator(name);
-      var end = this._customEventEndGenerator(name);
+      var start = this._customCalculationStartGenerator(name);
+      var end = this._customCalculationEndGenerator(name);
       this.calcs[name] = function(data) {
         return data[end] - data[start];
       };
@@ -117,14 +115,14 @@
 
   Timing.prototype.start = function(name) {
     this._ensureCustomCalculation(name);
-    var event = this._customcalcstartGenerator(name);
+    var event = this._customCalculationStartGenerator(name);
     this.data[event] = (new Date()).getTime();
     return this;
   };
 
   Timing.prototype.end = function(name) {
     this._ensureCustomCalculation(name);
-    var event = this._customEventEndGenerator(name);
+    var event = this._customCalculationEndGenerator(name);
     this.data[event] = (new Date()).getTime();
     return this;
   };
