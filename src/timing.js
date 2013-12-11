@@ -2,10 +2,10 @@
   "use strict";
 
   // Constructor
-  var Timing = function(timing) {
-    this.timing = timing;
+  var Timing = function(data) {
+    this.data = data;
     if (Timing.supportsNavigationTiming()) {
-      this.events = {
+      this.calcs = {
         'navigationStart': 'navigationStart',
         'fetchStart': 'fetchStart',
         'domainLookupStart': 'domainLookupStart',
@@ -18,17 +18,17 @@
         'redirectEnd': 'redirectEnd',
         'responseStart': 'responseStart',
         'responseEnd': 'responseEnd',
-        'unloadEventStart': 'unloadEventStart',
+        'unloadcalcstart': 'unloadcalcstart',
         'unloadEventEnd': 'unloadEventEnd',
         'domLoading': 'domLoading',
         'domInteractive': 'domInteractive',
-        'domContentLoadedEventStart': 'domContentLoadedEventStart',
+        'domContentLoadedcalcstart': 'domContentLoadedcalcstart',
         'domContentLoadedEventEnd': 'domContentLoadedEventEnd',
         'domComplete': 'domComplete',
-        'loadEventStart': 'loadEventStart',
+        'loadcalcstart': 'loadcalcstart',
         'loadEventEnd': 'loadEventEnd',
 
-        // custom events
+        // custom calcs
         'userTime': function(timing) {
           return timing.loadEventEnd - timing.navigationStart;
         },
@@ -46,10 +46,10 @@
         }
       };
     } else {
-      this.events = {};
+      this.calcs = {};
     }
 
-    this.customEvents = {};
+    this.customcalcs = {};
   };
 
   // Static methods
@@ -62,13 +62,13 @@
     if (!callback) {
       callback = name;
     }
-    this.events[event] = callback;
+    this.calcs[event] = callback;
     return this;
   };
 
-  Timing.prototype.registerAll = function(events) {
-    for (var event in events) {
-      this.register(event, events[event]);
+  Timing.prototype.registerAll = function(calcs) {
+    for (var event in calcs) {
+      this.register(event, calcs[event]);
     }
     return this;
   };
@@ -76,7 +76,7 @@
   Timing.prototype.getAll = function() {
     var data = {};
 
-    for (var event in this.events) {
+    for (var event in this.calcs) {
       data[event] = this.get(event);
     }
 
@@ -84,20 +84,20 @@
   };
 
   Timing.prototype.get = function(name) {
-    var event = this.events[name];
+    var event = this.calcs[name];
       
     switch (typeof event) {
       case 'function':
-        return event.call(this, this.timing);
+        return event.call(this, this.data);
 
       case 'string':
-        return this.timing[event];
+        return this.data[event];
     }
 
     return data;
   };
 
-  Timing.prototype._customEventStartGenerator = function(name) {
+  Timing.prototype._customcalcstartGenerator = function(name) {
     return name + 'Start';
   };
 
@@ -105,27 +105,27 @@
     return name + 'End';
   };
 
-  Timing.prototype._ensureCustomEvent = function(name) {
-    if (!this.events[name]) {
-      var start = this._customEventStartGenerator(name);
+  Timing.prototype._ensureCustomCalculation = function(name) {
+    if (!this.calcs[name]) {
+      var start = this._customcalcstartGenerator(name);
       var end = this._customEventEndGenerator(name);
-      this.events[name] = function(timing) {
-        return timing[end] - timing[start];
+      this.calcs[name] = function(data) {
+        return data[end] - data[start];
       };
     }
   };
 
   Timing.prototype.start = function(name) {
-    this._ensureCustomEvent(name);
-    var event = this._customEventStartGenerator(name);
-    this.timing[event] = (new Date()).getTime();
+    this._ensureCustomCalculation(name);
+    var event = this._customcalcstartGenerator(name);
+    this.data[event] = (new Date()).getTime();
     return this;
   };
 
   Timing.prototype.end = function(name) {
-    this._ensureCustomEvent(name);
+    this._ensureCustomCalculation(name);
     var event = this._customEventEndGenerator(name);
-    this.timing[event] = (new Date()).getTime();
+    this.data[event] = (new Date()).getTime();
     return this;
   };
 

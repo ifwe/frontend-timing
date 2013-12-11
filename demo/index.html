@@ -6,15 +6,16 @@
 (function(window) {
   "use strict";
 
-  var timing = new window.tagged.Timing(window.performance.timing);
+  var timing = new window.tagged.Timing(window.performance && window.performance.timing || {});
 
-  // Register a custom event
+  // Register a custom calculation
   timing.register('firstByte', function(timing) {
     return timing.responseStart - timing.navigationStart;
   });
 
   window.addEventListener("load", function() {
     window.setTimeout(function() {
+      // Get all timing data
       var data = timing.getAll();
       appendResult('Timing data available on page load', data);
     }, 0);
@@ -27,8 +28,9 @@
         // Custom event end
         timing.end('derp');
 
-        var customEventData = timing.get('derp');
-        appendResult('Custom event "derp"', customEventData);
+        // Get timing for custom event
+        var customEventTiming = timing.get('derp');
+        appendResult('Custom event "derp"', customEventTiming);
       }, Math.random() * 100);
     }, 2000);
   }, false);

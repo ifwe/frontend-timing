@@ -16,12 +16,12 @@ Schedule a call after the window's `load` event to access the timing data. By us
 
     <script type="text/javascript">
     (function(window) {
-      var timing = new window.tagged.Timing(window.performance.timing);
+      var timing = new window.tagged.Timing(window.performance && window.performance.timing || {});
 
       window.addEventListener("load", function() {
         window.setTimeout(function() {
-          var data = timing.getAll();
-          console.log('All data', data);
+          var allTimingData = timing.getAll();
+          console.log('All Timing Data', allTimingData);
         }, 0);
       });
       })(window);
@@ -30,14 +30,14 @@ Schedule a call after the window's `load` event to access the timing data. By us
 Custom Calculations
 --
 
-To register a custom calculation, simply call `timing.register` and pass in the name of your custom calculation and a function that accepts a `timing` object. The function return a calculation, and will be called when using `timing.getAll()` or `timing.get()` with your custom calculation name.
+To register a custom calculation, simply call `timing.register` and pass in the name of your custom calculation and a function that accepts a `data` object. The data object will be equal to the performance timing object that was passed in during construction. The function should return a calculation based on the provided data, and will be called each time `timing.getAll()` is called or `timing.get()` with your custom calculation name is called.
 
-      timing.register('firstByte', function(timing) {
-        return timing.responseStart - timing.navigationStart;
+      timing.register('firstByte', function(data) {
+        return data.responseStart - data.navigationStart;
       });
 
-      var data = timing.getAll(); // now includes data.firstByty
-      var firstByte = timing.get('firstByte'); // alternative method
+      var allTimingData = timing.getAll(); // now includes allTimingData.firstByte
+      var firstByteTiming = timing.get('firstByte'); // alternative method
 
 Custom Events
 --
@@ -48,8 +48,8 @@ Custom events can easily be registered by calling `timing.start()` and `timing.e
     /* some code that takes a long time, async included */
     timing.end('myLongProcess');
 
-    var data = timing.getAll(); // now includes data.myLongProcess
-    var myLongProcessDuration = timing.get('myLongProcess'); // alternative method
+    var allTimingData = timing.getAll(); // now includes allTimingData.myLongProcess
+    var myLongProcessTiming = timing.get('myLongProcess'); // alternative method
 
 TODO
 --
